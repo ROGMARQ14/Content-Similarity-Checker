@@ -11,15 +11,22 @@ from sklearn.metrics.pairwise import cosine_similarity
 import re
 
 # Download required NLTK data
-@st.cache_resource
-def download_nltk_data():
+try:
+    nltk.data.find('tokenizers/punkt')
+    nltk.data.find('corpora/stopwords')
+    nltk.data.find('corpora/wordnet')
+    nltk.data.find('taggers/averaged_perceptron_tagger')
+except LookupError:
     nltk.download('punkt')
     nltk.download('stopwords')
     nltk.download('wordnet')
     nltk.download('averaged_perceptron_tagger')
 
-download_nltk_data()
+# Cache the stopwords and lemmatizer
+stop_words = set(stopwords.words('english'))
+lemmatizer = WordNetLemmatizer()
 
+@st.cache_data
 def preprocess_text(text):
     """
     Preprocess the input text by cleaning, tokenizing, removing stopwords and lemmatizing
@@ -32,15 +39,14 @@ def preprocess_text(text):
     tokens = word_tokenize(text)
     
     # Remove stopwords
-    stop_words = set(stopwords.words('english'))
     tokens = [token for token in tokens if token not in stop_words]
     
     # Lemmatize
-    lemmatizer = WordNetLemmatizer()
     tokens = [lemmatizer.lemmatize(token) for token in tokens]
     
     return ' '.join(tokens)
 
+@st.cache_data
 def calculate_similarity_metrics(text1, text2):
     """
     Calculate various similarity metrics between two texts
@@ -71,6 +77,7 @@ def calculate_similarity_metrics(text1, text2):
         'unique_words_text2': unique_words2
     }
 
+@st.cache_data
 def plot_similarity_metrics(metrics):
     """
     Create a visualization of similarity metrics
@@ -95,7 +102,7 @@ def plot_similarity_metrics(metrics):
     return fig
 
 def main():
-    st.title("Text Similarity Analyzer")
+    st.title("Enhanced Text Similarity Analyzer")
     st.write("This tool analyzes the similarity between two texts and provides detailed metrics.")
     
     # Input text areas
