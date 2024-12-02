@@ -1,10 +1,8 @@
 import streamlit as st
 import nltk
 import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
 from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize, sent_tokenize
+from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -15,12 +13,10 @@ try:
     nltk.data.find('tokenizers/punkt')
     nltk.data.find('corpora/stopwords')
     nltk.data.find('corpora/wordnet')
-    nltk.data.find('taggers/averaged_perceptron_tagger')
 except LookupError:
     nltk.download('punkt')
     nltk.download('stopwords')
     nltk.download('wordnet')
-    nltk.download('averaged_perceptron_tagger')
 
 # Cache the stopwords and lemmatizer
 stop_words = set(stopwords.words('english'))
@@ -77,33 +73,9 @@ def calculate_similarity_metrics(text1, text2):
         'unique_words_text2': unique_words2
     }
 
-@st.cache_data
-def plot_similarity_metrics(metrics):
-    """
-    Create a visualization of similarity metrics
-    """
-    fig, ax = plt.subplots(figsize=(10, 6))
-    
-    # Create a heatmap-style visualization
-    similarity_score = metrics['cosine_similarity']
-    sns.heatmap([[similarity_score]], 
-                annot=True, 
-                cmap='RdYlGn', 
-                vmin=0, 
-                vmax=1, 
-                center=0.5,
-                cbar_kws={'label': 'Similarity Score'},
-                ax=ax)
-    
-    ax.set_title('Text Similarity Visualization')
-    ax.set_xticks([])
-    ax.set_yticks([])
-    
-    return fig
-
 def main():
-    st.title("Enhanced Text Similarity Analyzer")
-    st.write("This tool analyzes the similarity between two texts and provides detailed metrics.")
+    st.title("Text Similarity Analyzer")
+    st.write("Compare two texts and analyze their similarity for SEO purposes.")
     
     # Input text areas
     col1, col2 = st.columns(2)
@@ -120,26 +92,22 @@ def main():
             # Display results
             st.subheader("Analysis Results")
             
-            # Similarity score with color coding
-            similarity_score = metrics['cosine_similarity']
-            st.metric("Similarity Score", f"{similarity_score:.2%}")
+            # Create a DataFrame for better presentation
+            df = pd.DataFrame({
+                'Metric': ['Similarity Score', 'Common Words', 'Unique Words (Text 1)', 'Unique Words (Text 2)'],
+                'Value': [
+                    f"{metrics['cosine_similarity']:.2%}",
+                    metrics['common_words'],
+                    metrics['unique_words_text1'],
+                    metrics['unique_words_text2']
+                ]
+            })
             
-            # Additional metrics
-            col1, col2, col3 = st.columns(3)
-            with col1:
-                st.metric("Common Words", metrics['common_words'])
-            with col2:
-                st.metric("Unique Words (Text 1)", metrics['unique_words_text1'])
-            with col3:
-                st.metric("Unique Words (Text 2)", metrics['unique_words_text2'])
-            
-            # Visualization
-            st.subheader("Similarity Visualization")
-            fig = plot_similarity_metrics(metrics)
-            st.pyplot(fig)
+            st.dataframe(df, use_container_width=True)
             
             # Interpretation
             st.subheader("Interpretation")
+            similarity_score = metrics['cosine_similarity']
             if similarity_score >= 0.8:
                 st.warning("⚠️ High similarity detected! These texts might be considered duplicate content.")
             elif similarity_score >= 0.5:
