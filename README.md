@@ -4,6 +4,9 @@ A streamlined Streamlit application for analyzing text similarity, specifically 
 
 ## Features
 
+- Support for multiple input methods:
+  - Direct text input
+  - File upload (TXT, DOCX, PDF)
 - Advanced text preprocessing including tokenization, lemmatization, and stopword removal
 - Multiple similarity metrics:
   - Cosine similarity using TF-IDF vectorization
@@ -21,6 +24,8 @@ A streamlined Streamlit application for analyzing text similarity, specifically 
 - scikit-learn==1.2.2
 - numpy==1.23.5
 - pandas==1.5.3
+- python-docx==0.8.11
+- PyPDF2==3.0.1
 
 ## Installation
 
@@ -44,24 +49,33 @@ streamlit run app.py
 
 2. Open your web browser and navigate to the provided local URL (typically http://localhost:8501)
 
-3. Enter your texts in the two text areas and click "Analyze Similarity"
+3. Choose your input method:
+   - Upload Files: Select and upload two documents (TXT, DOCX, or PDF)
+   - Direct Text Input: Paste your texts directly into the text areas
+
+4. Click "Analyze Similarity" to compare the texts
 
 ## How It Works
 
 The application performs the following steps:
-1. Text Preprocessing:
+1. File Processing (if files are uploaded):
+   - Reads content from uploaded files based on their format
+   - Extracts text from PDFs and DOCX files
+   - Handles potential encoding issues
+
+2. Text Preprocessing:
    - Converts text to lowercase
    - Removes special characters
    - Tokenizes the text
    - Removes stopwords
    - Applies lemmatization
 
-2. Similarity Analysis:
+3. Similarity Analysis:
    - Calculates TF-IDF vectors
    - Computes cosine similarity
    - Analyzes common and unique words
 
-3. Results Display:
+4. Results Display:
    - Shows similarity score with interpretation
    - Displays detailed metrics in a clear table format
    - Provides content duplication warnings when necessary
