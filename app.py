@@ -4,9 +4,9 @@ import pandas as pd
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
 import re
+from collections import Counter
+import math
 
 # Download required NLTK data
 @st.cache(allow_output_mutation=True)
@@ -51,26 +51,50 @@ def preprocess_text(text):
     # Lemmatize
     tokens = [text_processors['lemmatizer'].lemmatize(token) for token in tokens]
     
-    return ' '.join(tokens)
+    return tokens
+
+def get_word_freq(tokens):
+    """
+    Get word frequencies from tokens
+    """
+    return Counter(tokens)
+
+def calculate_cosine_similarity(freq1, freq2):
+    """
+    Calculate cosine similarity between two frequency dictionaries
+    """
+    # Get all unique words
+    all_words = set(freq1.keys()) | set(freq2.keys())
+    
+    # Calculate dot product and magnitudes
+    dot_product = sum(freq1.get(word, 0) * freq2.get(word, 0) for word in all_words)
+    magnitude1 = math.sqrt(sum(freq1.get(word, 0) ** 2 for word in all_words))
+    magnitude2 = math.sqrt(sum(freq2.get(word, 0) ** 2 for word in all_words))
+    
+    # Avoid division by zero
+    if magnitude1 == 0 or magnitude2 == 0:
+        return 0
+        
+    return dot_product / (magnitude1 * magnitude2)
 
 def calculate_similarity_metrics(text1, text2):
     """
     Calculate various similarity metrics between two texts
     """
     # Preprocess texts
-    processed_text1 = preprocess_text(text1)
-    processed_text2 = preprocess_text(text2)
+    tokens1 = preprocess_text(text1)
+    tokens2 = preprocess_text(text2)
     
-    # TF-IDF Vectorization
-    vectorizer = TfidfVectorizer()
-    tfidf_matrix = vectorizer.fit_transform([processed_text1, processed_text2])
+    # Get word frequencies
+    freq1 = get_word_freq(tokens1)
+    freq2 = get_word_freq(tokens2)
     
     # Calculate cosine similarity
-    similarity = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:2])[0][0]
+    similarity = calculate_cosine_similarity(freq1, freq2)
     
     # Calculate additional metrics
-    words1 = set(processed_text1.split())
-    words2 = set(processed_text2.split())
+    words1 = set(tokens1)
+    words2 = set(tokens2)
     
     common_words = len(words1.intersection(words2))
     unique_words1 = len(words1)
@@ -118,8 +142,8 @@ if st.button("Analyze Similarity") and text1 and text2:
         st.subheader("Interpretation")
         similarity_score = metrics['cosine_similarity']
         if similarity_score >= 0.8:
-            st.warning(" High similarity detected! These texts might be considered duplicate content.")
+            st.warning("High similarity detected! These texts might be considered duplicate content.")
         elif similarity_score >= 0.5:
-            st.info(" Moderate similarity detected. Some content overlap exists.")
+            st.info("Moderate similarity detected. Some content overlap exists.")
         else:
-            st.success(" Low similarity. These texts are substantially different.")
+            st.success("Low similarity. These texts are substantially different.")
