@@ -19,13 +19,12 @@ A streamlined Streamlit application for analyzing text similarity, specifically 
 ## Requirements
 
 - Python 3.7+
-- streamlit==1.24.0
+- streamlit==1.22.0
 - nltk==3.8.1
-- scikit-learn==1.2.2
-- numpy==1.23.5
+- scikit-learn==1.0.2
 - pandas==1.5.3
 - python-docx==0.8.11
-- PyPDF2==3.0.1
+- PyPDF2==2.12.1
 
 ## Installation
 
