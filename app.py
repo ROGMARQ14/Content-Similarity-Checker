@@ -43,7 +43,7 @@ def read_file_content(uploaded_file):
             content = ' '.join([paragraph.text for paragraph in doc.paragraphs])
         elif file_type == 'pdf':
             pdf = PdfReader(io.BytesIO(uploaded_file.getvalue()))
-            content = ' '.join([page.extract_text() for page in pdf.pages])
+            content = ' '.join([page.extract_text() for page in pdf.pages if page.extract_text()])
         else:
             st.error(f"Unsupported file type: {file_type}")
             return ""
