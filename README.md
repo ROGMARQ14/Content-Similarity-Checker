@@ -1,6 +1,6 @@
 # Text Similarity Analyzer
 
-A powerful Streamlit-based application for analyzing text similarity, specifically designed for SEO professionals to detect duplicate content issues.
+A streamlined Streamlit application for analyzing text similarity, specifically designed for SEO professionals to detect duplicate content issues.
 
 ## Features
 
@@ -9,9 +9,18 @@ A powerful Streamlit-based application for analyzing text similarity, specifical
   - Cosine similarity using TF-IDF vectorization
   - Common words analysis
   - Unique words count for each text
-- Interactive visualization of similarity scores
+- Clean, simple data presentation
 - Real-time analysis and interpretation
 - User-friendly Streamlit interface
+
+## Requirements
+
+- Python 3.7+
+- streamlit==1.24.0
+- nltk==3.8.1
+- scikit-learn==1.2.2
+- numpy==1.23.5
+- pandas==1.5.3
 
 ## Installation
 
@@ -52,27 +61,13 @@ The application performs the following steps:
    - Computes cosine similarity
    - Analyzes common and unique words
 
-3. Visualization:
-   - Displays similarity score with color-coded interpretation
-   - Shows detailed metrics
-   - Provides a heatmap visualization
+3. Results Display:
+   - Shows similarity score with interpretation
+   - Displays detailed metrics in a clear table format
+   - Provides content duplication warnings when necessary
 
 ## Interpretation Guide
 
 - Similarity Score ≥ 80%: High similarity, potential duplicate content
 - Similarity Score 50-79%: Moderate similarity, some content overlap
 - Similarity Score < 50%: Low similarity, substantially different content
-
-## Requirements
-
-- Python 3.7+
-- NLTK
-- scikit-learn
-- Streamlit
-- pandas
-- matplotlib
-- seaborn
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
